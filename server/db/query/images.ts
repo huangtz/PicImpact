@@ -39,13 +39,13 @@ export async function fetchServerImagesListByAlbum(
   if (pageNum < 1) {
     pageNum = 1
   }
-  
+
   // 如果没有提供 pageSize，从配置中获取
   if (!pageSize) {
     const configPageSize = await fetchConfigValue('admin_images_per_page', '8')
     pageSize = parseInt(configPageSize, 10) || 8
   }
-  
+
   if (album && album !== '') {
     return await db.$queryRaw`
       SELECT 
@@ -53,10 +53,10 @@ export async function fetchServerImagesListByAlbum(
           albums.name AS album_name,
           albums.id AS album_value
       FROM 
-          "public"."images" AS image
-      INNER JOIN "public"."images_albums_relation" AS relation
+          "images" AS image
+      INNER JOIN "images_albums_relation" AS relation
           ON image.id = relation."imageId"
-      INNER JOIN "public"."albums" AS albums
+      INNER JOIN "albums" AS albums
           ON relation.album_value = albums.album_value
       WHERE
           image.del = 0
@@ -77,10 +77,10 @@ export async function fetchServerImagesListByAlbum(
         albums.name AS album_name,
         albums.id AS album_value
     FROM 
-        "public"."images" AS image
-    LEFT JOIN "public"."images_albums_relation" AS relation
+        "images" AS image
+    LEFT JOIN "images_albums_relation" AS relation
         ON image.id = relation."imageId"
-    LEFT JOIN "public"."albums" AS albums
+    LEFT JOIN "albums" AS albums
         ON relation.album_value = albums.album_value
     WHERE 
         image.del = 0
@@ -116,10 +116,10 @@ export async function fetchServerImagesPageTotalByAlbum(
         SELECT DISTINCT ON (image.id)
             image.id 
         FROM 
-            "public"."images" AS image
-        INNER JOIN "public"."images_albums_relation" AS relation
+            "images" AS image
+        INNER JOIN "images_albums_relation" AS relation
             ON image.id = relation."imageId"
-        INNER JOIN "public"."albums" AS albums
+        INNER JOIN "albums" AS albums
             ON relation.album_value = albums.album_value
         WHERE 
             image.del = 0
@@ -141,10 +141,10 @@ export async function fetchServerImagesPageTotalByAlbum(
         SELECT DISTINCT ON (image.id)
             image.id
         FROM
-            "public"."images" AS image
-        LEFT JOIN "public"."images_albums_relation" AS relation
+            "images" AS image
+        LEFT JOIN "images_albums_relation" AS relation
             ON image.id = relation."imageId"
-        LEFT JOIN "public"."albums" AS albums
+        LEFT JOIN "albums" AS albums
             ON relation.album_value = albums.album_value
         WHERE
             image.del = 0
@@ -172,7 +172,7 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
     SELECT 
         image.*
     FROM 
-        "public"."images" AS image
+        "images" AS image
     WHERE
         image.del = 0
     AND
@@ -200,10 +200,10 @@ export async function fetchClientImagesListByAlbum(pageNum: number, album: strin
         albums.license AS album_license,
         albums.image_sorting AS album_image_sorting
     FROM 
-        "public"."images" AS image
-    INNER JOIN "public"."images_albums_relation" AS relation
+        "images" AS image
+    INNER JOIN "images_albums_relation" AS relation
         ON image.id = relation."imageId"
-    INNER JOIN "public"."albums" AS albums
+    INNER JOIN "albums" AS albums
         ON relation.album_value = albums.album_value
     WHERE
         image.del = 0
@@ -237,7 +237,7 @@ export async function fetchClientImagesPageTotalByAlbum(album: string): Promise<
         SELECT DISTINCT ON (image.id)
            image.id
         FROM
-           "public"."images" AS image
+           "images" AS image
         WHERE
             image.del = 0
         AND
@@ -255,10 +255,10 @@ export async function fetchClientImagesPageTotalByAlbum(album: string): Promise<
         SELECT DISTINCT ON (image.id)
            image.id
         FROM
-           "public"."images" AS image
-        INNER JOIN "public"."images_albums_relation" AS relation
+           "images" AS image
+        INNER JOIN "images_albums_relation" AS relation
             ON image.id = relation."imageId"
-        INNER JOIN "public"."albums" AS albums
+        INNER JOIN "albums" AS albums
             ON relation.album_value = albums.album_value
         WHERE
             image.del = 0
@@ -293,10 +293,10 @@ export async function fetchClientImagesListByTag(pageNum: number, tag: string): 
         albums.id AS album_value,
         albums.license AS album_license
     FROM 
-        "public"."images" AS image
-    INNER JOIN "public"."images_albums_relation" AS relation
+        "images" AS image
+    INNER JOIN "images_albums_relation" AS relation
         ON image.id = relation."imageId"
-    INNER JOIN "public"."albums" AS albums
+    INNER JOIN "albums" AS albums
         ON relation.album_value = albums.album_value
     WHERE
         image.del = 0
@@ -325,10 +325,10 @@ export async function fetchClientImagesPageTotalByTag(tag: string): Promise<numb
         SELECT DISTINCT ON (image.id)
            image.id
         FROM
-           "public"."images" AS image
-        INNER JOIN "public"."images_albums_relation" AS relation
+           "images" AS image
+        INNER JOIN "images_albums_relation" AS relation
             ON image.id = relation."imageId"
-        INNER JOIN "public"."albums" AS albums
+        INNER JOIN "albums" AS albums
             ON relation.album_value = albums.album_value
         WHERE
             image.del = 0
@@ -361,16 +361,16 @@ export async function fetchImagesAnalysis():
   }> {
   const counts = await db.$queryRaw<[{ images_total: number, images_show: number, cr_total: number, tags_total: number }]>`
     SELECT 
-      (SELECT COALESCE(COUNT(*), 0) FROM "public"."images" WHERE del = 0) as images_total,
-      (SELECT COALESCE(COUNT(*), 0) FROM "public"."images" WHERE del = 0 AND show = 0) as images_show,
-      (SELECT COALESCE(COUNT(*), 0) FROM "public"."albums" WHERE del = 0) as tags_total
+      (SELECT COALESCE(COUNT(*), 0) FROM "images" WHERE del = 0) as images_total,
+      (SELECT COALESCE(COUNT(*), 0) FROM "images" WHERE del = 0 AND show = 0) as images_show,
+      (SELECT COALESCE(COUNT(*), 0) FROM "albums" WHERE del = 0) as tags_total
   `
 
   const cameraStats = await db.$queryRaw`
     SELECT COUNT(*) as count, 
       COALESCE(exif->>'model', 'Unknown') as camera,
       COALESCE(exif->>'lens_model', 'Unknown') as lens
-    FROM "public"."images"
+    FROM "images"
     WHERE del = 0
     GROUP BY camera, lens
     ORDER BY count DESC
@@ -383,10 +383,10 @@ export async function fetchImagesAnalysis():
         COALESCE(COUNT(1), 0) AS total,
         COALESCE(SUM(CASE WHEN image.show = 0 THEN 1 ELSE 0 END), 0) AS show_total
     FROM
-        "public"."images" AS image
-    INNER JOIN "public"."images_albums_relation" AS relation
+        "images" AS image
+    INNER JOIN "images_albums_relation" AS relation
         ON image.id = relation."imageId"
-    INNER JOIN "public"."albums" AS albums
+    INNER JOIN "albums" AS albums
         ON relation.album_value = albums.album_value
     WHERE 
         image.del = 0
@@ -479,7 +479,7 @@ export async function fetchCameraAndLensList(): Promise<{ cameras: string[], len
     SELECT DISTINCT
       COALESCE(exif->>'model', 'Unknown') as camera,
       COALESCE(exif->>'lens_model', 'Unknown') as lens
-    FROM "public"."images"
+    FROM "images"
     WHERE del = 0
     ORDER BY camera, lens
   `

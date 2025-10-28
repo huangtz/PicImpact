@@ -10,7 +10,7 @@ import { db } from '~/server/lib/db'
  */
 export async function updateS3Config(configs: any) {
   return await db.$executeRaw`
-    UPDATE "public"."configs"
+    UPDATE "configs"
     SET config_value = CASE
        WHEN config_key = 'accesskey_id' THEN ${configs.accesskeyId}
        WHEN config_key = 'accesskey_secret' THEN ${configs.accesskeySecret}
@@ -35,7 +35,7 @@ export async function updateS3Config(configs: any) {
  */
 export async function updateR2Config(configs: any) {
   return await db.$executeRaw`
-    UPDATE "public"."configs"
+    UPDATE "configs"
     SET config_value = CASE
        WHEN config_key = 'r2_accesskey_id' THEN ${configs.r2AccesskeyId}
        WHEN config_key = 'r2_accesskey_secret' THEN ${configs.r2AccesskeySecret}
@@ -57,7 +57,7 @@ export async function updateR2Config(configs: any) {
  */
 export async function updateAListConfig(configs: any) {
   return await db.$executeRaw`
-    UPDATE "public"."configs"
+    UPDATE "configs"
     SET config_value = CASE
        WHEN config_key = 'alist_url' THEN ${configs.alistUrl}
        WHEN config_key = 'alist_token' THEN ${configs.alistToken}
