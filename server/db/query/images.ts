@@ -419,25 +419,25 @@ export async function fetchImagesAnalysis():
 export async function fetchImageByIdAndAuth(id: string): Promise<ImageType> {
   const data: ImageType[] = await db.$queryRaw`
     SELECT
-        "images".*,
-        "albums".license AS album_license,
-        "albums".album_value AS album_value
+        image.*,
+        albums.license AS album_license,
+        albums.album_value AS album_value
     FROM
-        "images"
-    INNER JOIN "images_albums_relation"
-        ON "images"."id" = "images_albums_relation"."imageId"
-    INNER JOIN "albums"
-        ON "images_albums_relation".album_value = "albums".album_value
+        "pic"."images" AS image
+    INNER JOIN "pic"."images_albums_relation" AS relation
+        ON image."id" = relation."imageId"
+    INNER JOIN "pic"."albums" AS albums
+        ON relation.album_value = albums.album_value
     WHERE
-        "images".del = 0
+        image.del = 0
     AND
-        "albums".del = 0
+        albums.del = 0
     AND
-        "images".show = 0
+        image.show = 0
     AND
-        "albums".show = 0
+        albums.show = 0
     AND
-        "images".id = ${id}
+        image.id = ${id}
   `
   return data[0]
 }
@@ -455,9 +455,9 @@ export async function getRSSImages(): Promise<ImageType[]> {
       A.album_value,
       ROW_NUMBER() OVER (PARTITION BY A.album_value ORDER BY i.created_at DESC) AS rn
     FROM
-      images i
-      INNER JOIN images_albums_relation iar ON i.ID = iar."imageId"
-      INNER JOIN albums A ON iar.album_value = A.album_value
+      "pic"."images" i
+      INNER JOIN "pic"."images_albums_relation" iar ON i.ID = iar."imageId"
+      INNER JOIN "pic"."albums" A ON iar.album_value = A.album_value
     WHERE
       A.del = 0
       AND A."show" = 0
