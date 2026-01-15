@@ -13,9 +13,11 @@ PicImpact 是一个支持自部署的摄影作品展示网站，基于 Next.js +
 ### 功能特性
 
 - 瀑布流相册展示图片，支持[实况照片(Live Photos)](https://support.apple.com/zh-cn/104966)，基于 [LivePhotosKit JS](https://developer.apple.com/documentation/livephotoskitjs) 开发。
+- 基于 WebGL 的高性能图片查看器，支持流畅的缩放和平移，采用图片分块（Tiling）和 LOD 技术优化大图加载性能。
+- 支持地图模组标记图片，根据图片经纬度标记在地图上。
 - 点击图片查看原图，浏览图片信息和 EXIF 信息，支持直链访问。
 - 响应式设计，在 PC 和移动端都有不错的体验，支持暗黑模式。
-- 图片存储兼容 S3 API、Cloudflare R2、AList API。
+- 图片存储兼容 S3 API、Cloudflare R2、Open List API。
 - 图片支持绑定标签，并且可通过标签进行交互，筛选标签下所有图片。
 - 支持输出 RSS，可以使用 [Follow](https://github.com/RSSNext/Follow) 订阅，并支持订阅源所有权验证。
 - 支持批量自动化上传，上传图片时会生成 0.3 倍率的压缩图片，以提供加载优化。
@@ -71,12 +73,6 @@ pnpm run dev
 
 如果您有任何建议，欢迎反馈！
 
-### TODO
-
-- [ ] Map 地图展示
-
-...
-
 ### 代码贡献
 
 [提出新想法 & 提交 Bug](https://github.com/besscroft/PicImpact/issues/new) | [Fork & Pull Request](https://github.com/besscroft/PicImpact/fork)
@@ -114,6 +110,8 @@ PicImpact 欢迎各种贡献，包括但不限于改进，新功能，文档和�
 - UI 框架：
   - [Radix](https://www.radix-ui.com/)
   - [shadcn/ui](https://ui.shadcn.com/)
+- 图片渲染：
+  - WebGL 图片查看器（基于 [Afilmory](https://github.com/Afilmory/afilmory) 的 webgl-viewer 实现）
 - 更多组件参见 package.json
 
 ### 感谢
@@ -123,6 +121,8 @@ PicImpact 欢迎各种贡献，包括但不限于改进，新功能，文档和�
 ![JetBrains 徽标（主要） logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)
 
 ![IntelliJ IDEA logo](https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.svg)
+
+感谢 [Afilmory](https://github.com/Afilmory/afilmory) 项目提供的高性能 WebGL 图片查看器实现，本项目的 WebGL 图片渲染功能基于其 `webgl-viewer` 模块开发（MIT License）。
 
 ### License
 
